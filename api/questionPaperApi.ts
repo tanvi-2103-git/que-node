@@ -28,7 +28,7 @@ export async function updateQuestionPaperById(_id:string,questionPaper:QuestionP
    
 }
 
-export async function addQuestionPaper(questionPaper:QuestionPaper,sub_name:string) {
+export async function addQuestionPaper(questionPaper:QuestionPaper,sub_name:string,user_id:string) {
     // const QuestionPaperDoc = new QuestionPaperModel(questionPaper);
     // return await QuestionPaperDoc.save();
     const subject = await SubjectModel.findOne({ sub_name });
@@ -44,6 +44,7 @@ export async function addQuestionPaper(questionPaper:QuestionPaper,sub_name:stri
       const questionPaperData = {
         ...questionPaper, 
         sub_name, 
+        user_id
       };
       
     const QuestionPaperDoc = new QuestionPaperModel(questionPaperData);

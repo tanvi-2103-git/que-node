@@ -17,7 +17,8 @@ export interface QuestionPaper extends Document {
   // _id: number;
   questions: Question[];
   sub_name: string;
-  // createdAt?: Date; 
+  createdAt?: Date; 
+  user_id:string;
   // updatedAt?: Date; 
 }
 
@@ -26,7 +27,7 @@ const QuestionSchema: Schema<Question> = new Schema({
   // _id: { type: Number, required: true },
   question:{ type: String, required: true },
   answer_type: { type: String, required: true },
-  answer_choice: { type: String, required: true },
+  answer_choice: { type: String, required: true , default:""},
   marks_alloted: { type: Number, required: true },
 });
 
@@ -37,7 +38,8 @@ const QuestionPaperSchema: Schema<QuestionPaper> = new Schema({
   // _id: { type: Number, required: true },
   questions: [QuestionSchema],
   sub_name: { type: String, required: true,ref: 'Subject' },
-  // createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now },
+  user_id: {type:String, required: true, ref:'User'}
   // updatedAt: { type: Date, default: Date.now },
 });
 

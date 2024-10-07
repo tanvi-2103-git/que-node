@@ -1,4 +1,6 @@
 import express from "express";
+import bcrypt from "bcrypt"
+
 const app = express();
 import cors from "cors";
 import { ObjectId } from "mongodb";
@@ -70,17 +72,25 @@ app.post("/login", async (req, res) => {
   const user: User | null = await User.findOne({ email: req.body.email });
 
   const { email, password } = req.body;
-
+ 
   // Check if username and password match
   if (user) {
-    if (email === user.email && password === user.password) {
+     const matchPassword = await bcrypt.compare(password, user.password);
+     console.log("password", password);
+     console.log("user.password", user.password);
+     
+     console.log("matchPassword",matchPassword);
+     
+    if (email === user.email && matchPassword) {
       // Generate JWT token
       const token = generateToken({ id: user._id, username: user.username });
 
       res.json({
+        
         success: true,
         message: "Authentication successful!",
         token: token,
+        _id: user._id
       });
     } else {
       res.status(401).json({
@@ -129,11 +139,13 @@ app.get("/questions/getall", async function (req, res) {
 app.post("/questions/addquestionpaper", async function (request, response) {
   try {
     console.log("addquestionpaper", request.body);
-    const { sub_name, _id, ...questionpaperData } = request.body;
+    const { sub_name, _id,user_id, ...questionpaperData } = request.body;
     console.log(sub_name);
     console.log(questionpaperData);
+    console.log(user_id);
+    
 
-    const data = await addQuestionPaper(questionpaperData, sub_name);
+    const data = await addQuestionPaper(questionpaperData, sub_name,user_id);
     console.log("data", data);
 
     response.status(201).json(data);
@@ -142,37 +154,11 @@ app.post("/questions/addquestionpaper", async function (request, response) {
   }
 });
 
-app.post("/user/adduser", async function (request, response) {
-  try {
-    console.log("adduser", request.body);
-    const { userData } = request.body;
-    const data = await addUser(userData);
-    console.log("data", data);
-    response.status(201).json(data);
-  } catch (error) {
-    response.status(500).send("Error adding user");
-  }
-});
-app.post("/user/login", async function (request, response) {
-  const { username, email, password, contactNumber } = request.body;
-  const data: User | null = await User.findOne({ email: request.body.email });
-
-  // response.send(data);
-  if (!data) {
-    response.status(401).json({
-      message: "Auth failed",
-    });
-  } else {
-    if ((request.body.password = data.password)) {
-      response.send(data);
-    }
-  }
-});
 
 app.get("/questions/getallquestionpaper", async function (req, res) {
   try {
     const data = await getAllQuestionPapers();
-    console.log(data);
+    // console.log(data);
 
     res.json(data);
   } catch (error) {
@@ -207,25 +193,45 @@ app.post("/questions/addsubject", async function (request, response) {
 });
 
 app.get("/questions/get/:id", async function (request, response) {
+  try{
   const questionPaperId = new ObjectId(request.params.id);
   const data = await getQuestionPaperById(questionPaperId);
-  response.send(data);
+  response.json(data);
+}
+  catch(error){
+    response.status(500).json({ error: "Error fetching question paper" });
+
+  }
 });
 app.delete("/questions/delete/:id", async function (request, response) {
+  try{
   const questionPaperId = new ObjectId(request.params.id);
 
   const data = await deleteQuestionPaperById(questionPaperId);
-  response.send(data);
+  response.json(data);}
+  catch(error){
+    response.status(500).json({ error: "Error deleting question paper" });
+
+  }
 });
 
 app.put("/questions/update", async function (request, response) {
+  try{
   console.log(request.body);
   const { _id, ...questionPaper } = request.body;
   // const questionPaperId = new ObjectId(_id);
-  // console.log(_id);
-  // console.log(questionPaper);
+  console.log("_id", _id);
+  console.log("questionPaper", questionPaper);
+
+  
   const data = await updateQuestionPaperById(_id, questionPaper);
-  response.send(data);
+  console.log("data",data);
+  
+  response.send(data);}
+  catch(error){
+    response.status(500).json({ error: "Error updating question paper" });
+
+  }
 });
 
 // POST API: Add a QuestionPaper
@@ -299,3 +305,30 @@ app.put("/questions/update", async function (request, response) {
 //         res.status(500).send("Error fetching questions");
 //     }
 // })
+
+// app.post("/user/adduser", async function (request, response) {
+//   try {
+//     console.log("adduser", request.body);
+//     const { userData } = request.body;
+//     const data = await addUser(userData);
+//     console.log("data", data);
+//     response.status(201).json(data);
+//   } catch (error) {
+//     response.status(500).send("Error adding user");
+//   }
+// });
+// app.post("/user/login", async function (request, response) {
+//   const { username, email, password, contactNumber } = request.body;
+//   const data: User | null = await User.findOne({ email: request.body.email });
+
+//   // response.send(data);
+//   if (!data) {
+//     response.status(401).json({
+//       message: "Auth failed",
+//     });
+//   } else {
+//     if ((request.body.password = data.password)) {
+//       response.send(data);
+//     }
+//   }
+// });
