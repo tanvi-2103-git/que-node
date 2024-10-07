@@ -11,6 +11,7 @@ export interface Question extends Document {
 
 export interface Subject extends Document{
   sub_name: string;
+  
 }
 
 export interface QuestionPaper extends Document {
@@ -27,7 +28,7 @@ const QuestionSchema: Schema<Question> = new Schema({
   // _id: { type: Number, required: true },
   question:{ type: String, required: true },
   answer_type: { type: String, required: true },
-  answer_choice: { type: String, required: true , default:""},
+  answer_choice: { type: String, default:""},
   marks_alloted: { type: Number, required: true },
 });
 

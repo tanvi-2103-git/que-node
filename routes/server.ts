@@ -6,21 +6,15 @@ import cors from "cors";
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 // import authRoutes from './routes/auth';
-import { addQuestion, getAllQuestions } from "./api/questionApi";
-import {
-  addQuestionPaper,
-  addSubject,
-  addUser,
-  deleteQuestionPaperById,
-  getAllQuestionPapers,
-  getAllSubjects,
-  getQuestionPaperById,
-  getUserByName,
-  updateQuestionPaperById,
-} from "./api/questionPaperApi";
-import { User } from "./mongoDBModel/User";
+import { addQuestion, getAllQuestions } from "../api/questionApi";
+import {addQuestionPaper,addSubject,deleteQuestionPaperById,getAllQuestionPapers,getAllSubjects,getQuestionPaperById,updateQuestionPaperById} from "../api/questionPaperApi";
+import { User } from "../mongoDBModel/User";
 import bodyParser from "body-parser";
-import { generateToken } from "./routes/jwtUtils";
+import { generateToken } from "../token/jwtUtils";
+import {validateLoginUser,validateAddQuestionPaper,validateRegisterUser} from  "../middleware/validateReq"
+import { STATUS_CODES } from "http";
+
+//env
 mongoose
   .connect(
     "mongodb+srv://tanvidudam2103:newpass2103@cluster0.jsut3ly.mongodb.net/questionpapermaker?retryWrites=true&w=majority&appName=Cluster"
@@ -29,52 +23,26 @@ mongoose
     console.log("connected,connected.....");
   })
   .catch((err) => console.log(err));
-// var routes = require('./route/routes')
+
 
 app.use(express.json());
 app.use(cors());
-// app.use(routes);
+
+//port
 app.listen(5000, () => console.log("Application sever started"));
-// app.use('/api/auth', authRoutes);
+
 // Middleware
 app.use(bodyParser.json());
 
-// Middleware for JWT Token Validation
-import jwt from "jsonwebtoken";
-const validateToken = (req: any, res: any, next: any) => {
-  const authHeader = req.headers.authorization;
-
-  if (authHeader) {
-    const token = authHeader.split(" ")[1]; // Bearer <token>
-
-    jwt.verify(token, "yourSecretKey", (err: any, payload: any) => {
-      if (err) {
-        return res.status(403).json({
-          success: false,
-          message: "Invalid token",
-        });
-      } else {
-        req.user = payload;
-        next();
-      }
-    });
-  } else {
-    res.status(401).json({
-      success: false,
-      message: "Token is not provided",
-    });
-  }
-};
 
 
-// Login Route
-app.post("/login", async (req, res) => {
+
+//login user
+app.post("/login",validateLoginUser, async (req, res) => {
   const user: User | null = await User.findOne({ email: req.body.email });
 
   const { email, password } = req.body;
- 
-  // Check if username and password match
-  if (user) {
+   if (user) {
      const matchPassword = await bcrypt.compare(password, user.password);
      console.log("password", password);
      console.log("user.password", user.password);
@@ -100,7 +68,7 @@ app.post("/login", async (req, res) => {
     }
   }
 });
-app.post("/register", async (req, res) => {
+app.post("/register", validateRegisterUser, async (req, res) => {
   try {
     const { username, email, password, contactNumber } = req.body;
 
@@ -115,15 +83,8 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Protected Route
-app.get("/protected", validateToken, (req: any, res) => {
-  res.json({
-    success: true,
-    message: "Welcome to the protected route!",
-    user: req.user,
-  });
-});
 
+//register user
 app.get("/questions/getall", async function (req, res) {
   try {
     const data = await getAllQuestions();
@@ -136,7 +97,8 @@ app.get("/questions/getall", async function (req, res) {
   }
 });
 
-app.post("/questions/addquestionpaper", async function (request, response) {
+//Add question paper
+app.post("/questions/addquestionpaper",validateAddQuestionPaper, async function (request, response) {
   try {
     console.log("addquestionpaper", request.body);
     const { sub_name, _id,user_id, ...questionpaperData } = request.body;
@@ -150,59 +112,40 @@ app.post("/questions/addquestionpaper", async function (request, response) {
 
     response.status(201).json(data);
   } catch (error) {
-    response.status(500).send("Error adding question");
+    console.log(error);
+    
+    response.status(500).send("Error adding question Paper");
   }
 });
 
-
+//Get all Question paper
 app.get("/questions/getallquestionpaper", async function (req, res) {
   try {
     const data = await getAllQuestionPapers();
     // console.log(data);
-
-    res.json(data);
+    
+    res.status(200).json(data);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error fetching questions" });
   }
 });
 
-app.get("/questions/getallsubjects", async function (req, res) {
-  try {
-    const data = await getAllSubjects();
-    // console.log(data);
-
-    res.json(data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error fetching questions" });
-  }
-});
-
-app.post("/questions/addsubject", async function (request, response) {
-  try {
-    console.log("addsubject", request.body);
-    const { subject } = request.body;
-    const data = await addSubject(subject);
-    console.log(data);
-
-    response.status(201).json(data);
-  } catch (error) {
-    response.status(500).send("Error adding subject");
-  }
-});
-
+//get Questionpaper by id
 app.get("/questions/get/:id", async function (request, response) {
   try{
   const questionPaperId = new ObjectId(request.params.id);
   const data = await getQuestionPaperById(questionPaperId);
-  response.json(data);
+  response.status(200).json(data);
+   //Ok request suceed status200
 }
   catch(error){
     response.status(500).json({ error: "Error fetching question paper" });
 
   }
 });
+
+//delete question paper by id
 app.delete("/questions/delete/:id", async function (request, response) {
   try{
   const questionPaperId = new ObjectId(request.params.id);
@@ -211,10 +154,12 @@ app.delete("/questions/delete/:id", async function (request, response) {
   response.json(data);}
   catch(error){
     response.status(500).json({ error: "Error deleting question paper" });
+    //internal server error status500
 
   }
 });
 
+//edit question paper 
 app.put("/questions/update", async function (request, response) {
   try{
   console.log(request.body);
@@ -227,12 +172,48 @@ app.put("/questions/update", async function (request, response) {
   const data = await updateQuestionPaperById(_id, questionPaper);
   console.log("data",data);
   
-  response.send(data);}
+  response.json(data);}
   catch(error){
     response.status(500).json({ error: "Error updating question paper" });
 
   }
 });
+
+//subject 
+//get all subject
+app.get("/questions/getallsubjects", async function (req, res) {
+  try {
+    const data = await getAllSubjects();
+    // console.log(data);
+
+    res.json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching questions" });
+  }
+});
+
+
+//add subject
+app.post("/questions/addsubject", async function (request, response) {
+  try {
+    console.log("addsubject", request.body);
+    const  subject  = request.body;
+    console.log(subject);
+    
+    const data = await addSubject(subject);
+    console.log(data);
+
+    response.status(201).json(data);
+  } catch (error) {
+    response.status(500).send("Error adding subject");
+  }
+});
+
+
+
+
+
 
 // POST API: Add a QuestionPaper
 
