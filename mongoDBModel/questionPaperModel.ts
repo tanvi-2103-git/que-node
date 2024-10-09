@@ -1,18 +1,19 @@
 import mongoose, { Document, Schema } from 'mongoose';
-
-export interface Question extends Document {
-  // _id: number;
-  question:string;
-  answer_type: string;
-  answer_choice: string;
-  marks_alloted: number;
+import { QuestionModel } from './questionModel';
+import { QuestionSchema , Question } from './questionModel';
+// export interface Question extends Document {
+//   // _id: number;
+//   question:string;
+//   answer_type: string;
+//   answer_choice: string;
+//   marks_alloted: number;
   
-}
+// }
 
-export interface Subject extends Document{
-  sub_name: string;
+// export interface Subject extends Document{
+//   sub_name: string;
   
-}
+// }
 
 export interface QuestionPaper extends Document {
   // _id: number;
@@ -24,17 +25,17 @@ export interface QuestionPaper extends Document {
 }
 
 
-const QuestionSchema: Schema<Question> = new Schema({
-  // _id: { type: Number, required: true },
-  question:{ type: String, required: true },
-  answer_type: { type: String, required: true },
-  answer_choice: { type: String, default:""},
-  marks_alloted: { type: Number, required: true },
-});
+// const QuestionSchema: Schema<Question> = new Schema({
+//   // _id: { type: Number, required: true },
+//   question:{ type: String, required: true },
+//   answer_type: { type: String, required: true },
+//   answer_choice: { type: String, default:""},
+//   marks_alloted: { type: Number, required: true },
+// });
 
-const SubjectSchema:Schema<Subject> = new Schema({
-  sub_name: { type: String, required: true, unique: true }
-})
+// const SubjectSchema:Schema<Subject> = new Schema({
+//   sub_name: { type: String, required: true, unique: true }
+// })
 const QuestionPaperSchema: Schema<QuestionPaper> = new Schema({
   // _id: { type: Number, required: true },
   questions: [QuestionSchema],
@@ -44,8 +45,8 @@ const QuestionPaperSchema: Schema<QuestionPaper> = new Schema({
   // updatedAt: { type: Date, default: Date.now },
 });
 
-export const QuestionModel = mongoose.model<Question>('Question', QuestionSchema);
-export const SubjectModel = mongoose.model<Subject>('Subject',SubjectSchema);
+// export const QuestionModel = mongoose.model<Question>('Question', QuestionSchema);
+// export const SubjectModel = mongoose.model<Subject>('Subject',SubjectSchema);
 export const QuestionPaperModel = mongoose.model<QuestionPaper>('QuestionPaper', QuestionPaperSchema);
 
 

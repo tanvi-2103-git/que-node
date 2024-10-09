@@ -1,17 +1,18 @@
 import { error } from "console";
-import { Question, QuestionModel, QuestionPaper, QuestionPaperModel, Subject, SubjectModel } from "../mongoDBModel/questionPaperModel";
+import {  QuestionPaper, QuestionPaperModel } from "../mongoDBModel/questionPaperModel";
 import mongoose from "mongoose";
 import { ObjectId } from 'mongodb';
 import { User } from "../mongoDBModel/User";
+import { Subject, SubjectModel } from "../mongoDBModel/subjectModel";
 
 
 //getAllSubjects
-export async function getAllSubjects() {
-    const result = await SubjectModel.find({}).exec();
-    console.log(result);
+// export async function getAllSubjects() {
+//     const result = await SubjectModel.find({}).exec();
+//     console.log(result);
 
-    return result;
-}
+//     return result;
+// }
 
 //getQuestionPaperById
 export async function getQuestionPaperById(id:ObjectId){
@@ -70,10 +71,10 @@ export async function getAllQuestionPapers() {
 }
 
 //addSubject
-export async function addSubject(subject:Subject) {
-    const SubjectDoc = new SubjectModel(subject);
-    return await SubjectDoc.save();
-}
+// export async function addSubject(subject:Subject) {
+//     const SubjectDoc = new SubjectModel(subject);
+//     return await SubjectDoc.save();
+// }
 
 //
 // export async function addUser(user:User) {

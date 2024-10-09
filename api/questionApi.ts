@@ -1,4 +1,5 @@
-import { Question, QuestionModel, QuestionPaperModel } from "../mongoDBModel/questionPaperModel";
+import { Question, QuestionModel } from "../mongoDBModel/questionModel";
+import {  QuestionPaperModel } from "../mongoDBModel/questionPaperModel";
 import mongoose from "mongoose";
 
 export async function getAllQuestions() {
