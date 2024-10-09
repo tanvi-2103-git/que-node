@@ -12,9 +12,23 @@ import { User } from "../mongoDBModel/User";
 import bodyParser from "body-parser";
 import { generateToken } from "../token/jwtUtils";
 import {validateLoginUser,validateAddQuestionPaper,validateRegisterUser} from  "../middleware/validateReq"
-import { STATUS_CODES } from "http";
+import dotenv from 'dotenv';
+dotenv.config();
+
+
 
 //env
+// console.log("MONGODB_URI", process.env.MONGODB_URI);
+// console.log("Environment Variables:", process.env);
+
+// mongoose
+//   .connect(
+//     process.env.MONGODB_URI as string
+//   )
+//   .then((success) => {
+//     console.log("connected,connected.....");
+//   })
+//   .catch((err) => console.log(err));
 mongoose
   .connect(
     "mongodb+srv://tanvidudam2103:newpass2103@cluster0.jsut3ly.mongodb.net/questionpapermaker?retryWrites=true&w=majority&appName=Cluster"
@@ -58,8 +72,8 @@ app.post("/login",validateLoginUser, async (req, res) => {
         success: true,
         message: "Authentication successful!",
         token: token,
-        _id: user._id
-      });
+            _id: user._id
+  });
     } else {
       res.status(401).json({
         success: false,
@@ -71,21 +85,32 @@ app.post("/login",validateLoginUser, async (req, res) => {
 app.post("/register", validateRegisterUser, async (req, res) => {
   try {
     const { username, email, password, contactNumber } = req.body;
-
-    const user = new User({ username, email, password, contactNumber });
+    console.log("password",password)
+    const hash = await bcrypt.hash(password,10);
+    console.log(hash,"hash")
+    const trimmedHash = hash.trim();
+    console.log(trimmedHash,"trimmedHash");
+  //   const salt = await bcrypt.genSalt(10);
+  // const password1 = await bcrypt.hash(password, salt);
+    
+    const user = new User({ username, email, password: password, contactNumber });
+    
 
     await user.save();
+
+
+    console.log(user.password)
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     console.log(error);
 
-    res.status(400).json({ error });
+    // res.status(400).json({ error });
   }
 });
 
 
 //register user
-app.get("/questions/getall", async function (req, res) {
+app.get("/getall", async function (req, res) {
   try {
     const data = await getAllQuestions();
     console.log(data);
@@ -98,7 +123,7 @@ app.get("/questions/getall", async function (req, res) {
 });
 
 //Add question paper
-app.post("/questions/addquestionpaper",validateAddQuestionPaper, async function (request, response) {
+app.post("/addquestionpaper",validateAddQuestionPaper, async function (request, response) {
   try {
     console.log("addquestionpaper", request.body);
     const { sub_name, _id,user_id, ...questionpaperData } = request.body;

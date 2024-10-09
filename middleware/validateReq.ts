@@ -1,6 +1,32 @@
 import { Request,Response, NextFunction } from 'express';
 import Joi from 'joi'; // Import Joi for validation
 
+import jwt from 'jsonwebtoken';
+// const validateToken = (req:Request, res:Response, next:NextFunction) => {
+//   const authHeader = req.headers.authorization;
+
+//   if (authHeader) {
+//     const token = authHeader.split(' ')[1]; // Bearer <token>
+    
+//     jwt.verify(token, 'yourSecretKey', (err, payload) => {
+//       if (err) {
+//         return res.status(403).json({
+//           success: false,
+//           message: 'Invalid token',
+//         });
+//       } else {
+//         req.user = payload;
+//         next();
+//       }
+//     });
+//   } else {
+//     res.status(401).json({
+//       success: false,
+//       message: 'Token is not provided',
+//     });
+//   }
+// };
+
 // Joi validation for user registration
 export const validateRegisterUser = (req:Request, res:Response, next:NextFunction): void => {
   const schema = Joi.object({
@@ -14,8 +40,9 @@ export const validateRegisterUser = (req:Request, res:Response, next:NextFunctio
   if (error) {
      res.status(400).json({ error: error.details[0].message });
   }
-
+else{
   next(); 
+}
 };
 
 // Validation for login 
@@ -27,10 +54,13 @@ export const validateLoginUser = (req:Request, res:Response, next:NextFunction):
 
   const { error } = schema.validate(req.body);
   if (error) {
+    console.log(error);
+    
      res.status(400).json({ error: error.details[0].message });
   }
-
+  else{
   next(); 
+  }
 };
 
 export const validateAddQuestionPaper = (req:Request, res:Response, next:NextFunction): void => {
@@ -46,8 +76,8 @@ export const validateAddQuestionPaper = (req:Request, res:Response, next:NextFun
     const schema = Joi.object({
         questions: Joi.array().items(questionSchema), // Include questions array
   sub_name: Joi.string().required(),
-//   createdAt: Joi.date().required(),
-//   user_id:Joi.string().required()
+  createdAt: Joi.date().required(),
+  user_id:Joi.string().required()
       
     });
   
@@ -55,10 +85,11 @@ export const validateAddQuestionPaper = (req:Request, res:Response, next:NextFun
     if (error) {
         console.log("error",error);
         
-    //    res.status(400).json({ error: error.details[0].message });
+       res.status(400).json({ error: error.details[0].message });
     }
-  
+  else{
     next(); 
+  }
   };
 
 module.exports = { validateRegisterUser, validateLoginUser, validateAddQuestionPaper };
