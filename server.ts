@@ -1,49 +1,24 @@
 import express from "express";
-import bcrypt from "bcrypt"
-import jwt from 'jsonwebtoken';
-
+import "./config/mongoDB";
 const app = express();
 import cors from "cors";
-import { ObjectId } from "mongodb";
-import mongoose from "mongoose";
-// import authRoutes from './routes/auth';
-import { addQuestion, getAllQuestions } from "./api/questionApi";
-import {addQuestionPaper,deleteQuestionPaperById,getAllQuestionPapers,getQuestionPaperById,updateQuestionPaperById} from "./api/questionPaperApi";
-import { User } from "./mongoDBModel/User";
 import bodyParser from "body-parser";
-import { generateToken } from "./token/jwtUtils";
-import { STATUS_CODES } from "http";
 import { userRoutes } from "./routes/userRoutes";
 import { questionPaperRoutes } from "./routes/questionPaperRoutes";
 import { subjectRoutes } from "./routes/subjectRoutes";
-
-//env
-mongoose
-  .connect(
-    "mongodb+srv://tanvidudam2103:newpass2103@cluster0.jsut3ly.mongodb.net/questionpapermaker?retryWrites=true&w=majority&appName=Cluster"
-  )
-  .then((success) => {
-    console.log("connected,connected.....");
-  })
-  .catch((err) => console.log(err));
-
 
 app.use(express.json());
 app.use(cors());
 
 //port
-app.listen(5000, () => console.log("Application sever started"));
+app.listen(process.env.PORT, () => console.log("Application sever started"));
 
 // Middleware
 app.use(bodyParser.json());
 
-app.use("/api/user",userRoutes);
-app.use("/api/questionPaper",questionPaperRoutes);
-app.use("/api/subject",subjectRoutes)
-
-
-
-
+app.use("/api/user", userRoutes);
+app.use("/api/questionPaper", questionPaperRoutes);
+app.use("/api/subject", subjectRoutes);
 
 // //login user
 // app.post("/login",validateLoginUser, async (req, res) => {
@@ -54,9 +29,9 @@ app.use("/api/subject",subjectRoutes)
 //      const matchPassword = await bcrypt.compare(password, user.password);
 //      console.log("password", password);
 //      console.log("user.password", user.password);
-     
+
 //      console.log("matchPassword",matchPassword);
-     
+
 //     if (email === user.email && matchPassword) {
 //       // Generate JWT token
 //       // const token = generateToken({ id: user._id, username: user.username });
@@ -64,7 +39,7 @@ app.use("/api/subject",subjectRoutes)
 //         expiresIn: 200000,
 //       });
 //       res.json({
-        
+
 //         success: true,
 //         message: "Authentication successful!",
 //         token: token,
@@ -87,7 +62,7 @@ app.use("/api/subject",subjectRoutes)
 
 //     await user.save();
 //     console.log(user);
-    
+
 //     res.status(201).json({ message: "User registered successfully" });
 //   } catch (error) {
 //     console.log(error);
@@ -95,8 +70,6 @@ app.use("/api/subject",subjectRoutes)
 //     res.status(400).json({ error });
 //   }
 // });
-
-
 
 // app.get("/questions/getall",validateToken, async function (req, res) {
 //   try {
@@ -118,7 +91,6 @@ app.use("/api/subject",subjectRoutes)
 //     console.log(sub_name);
 //     console.log(questionpaperData);
 //     console.log(user_id);
-    
 
 //     const data = await addQuestionPaper(questionpaperData, sub_name,user_id);
 //     console.log("data", data);
@@ -126,7 +98,7 @@ app.use("/api/subject",subjectRoutes)
 //     response.status(201).json(data);
 //   } catch (error) {
 //     console.log(error);
-    
+
 //     response.status(500).send("Error adding question Paper");
 //   }
 // });
@@ -136,7 +108,7 @@ app.use("/api/subject",subjectRoutes)
 //   try {
 //     const data = await getAllQuestionPapers();
 //     // console.log(data);
-    
+
 //     res.status(200).json(data);
 //   } catch (error) {
 //     console.error(error);
@@ -172,7 +144,7 @@ app.use("/api/subject",subjectRoutes)
 //   }
 // });
 
-// //edit question paper 
+// //edit question paper
 // app.put("/questions/update",validateToken, async function (request, response) {
 //   try{
 //   console.log(request.body);
@@ -181,10 +153,9 @@ app.use("/api/subject",subjectRoutes)
 //   console.log("_id", _id);
 //   console.log("questionPaper", questionPaper);
 
-  
 //   const data = await updateQuestionPaperById(_id, questionPaper);
 //   console.log("data",data);
-  
+
 //   response.json(data);}
 //   catch(error){
 //     response.status(500).json({ error: "Error updating question paper" });
@@ -192,9 +163,7 @@ app.use("/api/subject",subjectRoutes)
 //   }
 // });
 
-
-
-//subject 
+//subject
 //get all subject
 // app.get("/api/questionPaper/getallsubjects",validateToken, async function (req, res) {
 //   try {
@@ -208,14 +177,13 @@ app.use("/api/subject",subjectRoutes)
 //   }
 // });
 
-
 // //add subject
 // app.post("/api/questionPaper/addsubject",validateToken, async function (request, response) {
 //   try {
 //     console.log("addsubject", request.body);
 //     const  subject  = request.body;
 //     console.log(subject);
-    
+
 //     const data = await addSubject(subject);
 //     console.log(data);
 
@@ -224,11 +192,6 @@ app.use("/api/subject",subjectRoutes)
 //     response.status(500).send("Error adding subject");
 //   }
 // });
-
-
-
-
-
 
 // POST API: Add a QuestionPaper
 

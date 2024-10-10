@@ -68,16 +68,16 @@ export const validateAddQuestionPaper = (req:Request, res:Response, next:NextFun
     const questionSchema = Joi.object({
         question:Joi.string().required(),
   answer_type: Joi.string().required(),
-  answer_choice: Joi.string().optional(),
+  // answer_choice: Joi.string().optional(),
   marks_alloted: Joi.number().integer().min(0).max(100).required(),
        
-    });
+    }).unknown();
 
     const schema = Joi.object({
-        questions: Joi.array().items(questionSchema), // Include questions array
+        questions: Joi.array().items(questionSchema).required(), // Include questions array
   sub_name: Joi.string().required(),
-  createdAt: Joi.date().required(),
-  user_id:Joi.string().required()
+  createdAt: Joi.date().optional(),
+  user_id:Joi.string().optional()
       
     });
   

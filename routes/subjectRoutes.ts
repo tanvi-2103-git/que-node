@@ -1,7 +1,8 @@
-import { addSubject, getAllSubjects } from "../api/subjectApi";
+// import { addSubject, getAllSubjects } from "../api/subjectApi";
 
 import express from "express";
 import { validateToken } from "../middleware/validateToken";
+import { addSubject, getAllSubjects } from "../controller/subjectApi";
 
 export const subjectRoutes = express();
 
