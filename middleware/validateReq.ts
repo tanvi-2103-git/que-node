@@ -1,6 +1,51 @@
 import { Request,Response, NextFunction } from 'express';
 import Joi from 'joi'; // Import Joi for validation
 
+
+export const validateAddQuestionPaper = (req:Request, res:Response, next:NextFunction): void => {
+
+    const questionSchema = Joi.object({
+        question:Joi.string().required(),
+  answer_type: Joi.string().required(),
+  // answer_choice: Joi.string().optional(),
+  marks_alloted: Joi.number().integer().min(0).max(100).required(),
+       
+    }).unknown();
+
+    const schema = Joi.object({
+        questions: Joi.array().items(questionSchema).required(), // Include questions array
+  sub_name: Joi.string().required(),
+  createdAt: Joi.date().optional(),
+  user_id:Joi.string().optional()
+      
+    });
+  
+    const { error } = schema.validate(req.body);
+    if (error) {
+        console.log("error",error);
+        
+       res.status(400).json({ error: error.details[0].message });
+    }
+  else{
+    next(); 
+  }
+  };
+
+module.exports = {  validateAddQuestionPaper };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // import jwt, { JwtPayload } from 'jsonwebtoken';
 
 
@@ -62,34 +107,3 @@ import Joi from 'joi'; // Import Joi for validation
 //   next(); 
 //   }
 // };
-
-export const validateAddQuestionPaper = (req:Request, res:Response, next:NextFunction): void => {
-
-    const questionSchema = Joi.object({
-        question:Joi.string().required(),
-  answer_type: Joi.string().required(),
-  // answer_choice: Joi.string().optional(),
-  marks_alloted: Joi.number().integer().min(0).max(100).required(),
-       
-    }).unknown();
-
-    const schema = Joi.object({
-        questions: Joi.array().items(questionSchema).required(), // Include questions array
-  sub_name: Joi.string().required(),
-  createdAt: Joi.date().optional(),
-  user_id:Joi.string().optional()
-      
-    });
-  
-    const { error } = schema.validate(req.body);
-    if (error) {
-        console.log("error",error);
-        
-       res.status(400).json({ error: error.details[0].message });
-    }
-  else{
-    next(); 
-  }
-  };
-
-module.exports = {  validateAddQuestionPaper };

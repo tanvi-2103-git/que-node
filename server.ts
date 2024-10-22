@@ -20,6 +20,25 @@ app.use("/api/user", userRoutes);
 app.use("/api/questionPaper", questionPaperRoutes);
 app.use("/api/subject", subjectRoutes);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // //login user
 // app.post("/login",validateLoginUser, async (req, res) => {
 //   const user: User | null = await User.findOne({ email: req.body.email });
